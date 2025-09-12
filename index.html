@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <!-- Safe fallback for exotic browsers or blocked JS -->
+  <meta http-equiv="refresh" content="5; url=https://plstin.github.io/_/">
+</head>
+<body>
+  <div style="text-align:center; margin-top: 40vh; font-family: Arial, sans-serif; font-size: 20px;">
+    Redirecting…
+  </div>
+
+  <script>
+    const targetUrl = "https://plstin.github.io/_/";
+
+    function getEnv() {
+      const ua = navigator.userAgent.toLowerCase();
+      return {
+        isAndroid: ua.includes("android"),
+        isIOS: /iphone|ipad|ipod/.test(ua),
+        isTikTok: /tiktok|musical_ly|douyin/.test(ua)
+      };
+    }
+
+    function attemptRedirect(url) {
+      try { window.location.href = url; } catch {}
+      try { window.location.replace(url); } catch {}
+      try { window.open(url, "_blank"); } catch {}
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+    }
+
+    function redirectTikTok() {
+      const env = getEnv();
+
+      if (!env.isTikTok) {
+        // Non-TikTok browsers: direct redirect
+        attemptRedirect(targetUrl);
+        return;
+      }
+
+      if (env.isAndroid) {
+        const intents = [
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=http;package=com.android.chrome;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.google.android.webview;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;end`
+        ];
+        // Staggered attempts for reliability
+        intents.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
+      } else if (env.isIOS) {
+        const iosSchemes = [
+          `googlechromes://${targetUrl.replace("https://", "")}`,
+          `safari://${targetUrl.replace("https://", "")}`
+        ];
+        iosSchemes.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
+      }
+
+      // Final direct fallback after 3 seconds
+      setTimeout(() => attemptRedirect(targetUrl), 3000);
+    }
+
+    // Trigger TikTok escape shortly after page load
+    setTimeout(redirectTikTok, 300);
+  </script>
+</body>
+</html>
