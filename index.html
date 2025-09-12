@@ -1,71 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
-  <!-- Safe fallback for exotic browsers or blocked JS -->
-  <meta http-equiv="refresh" content="5; url=https://plstin.github.io/_/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>يوسف - عروض الربح</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f0f2f5;
+    color: #222;
+    direction: rtl;
+    text-align: right;
+  }
+  main { padding: 20px; max-width: 1000px; margin: auto; }
+  #flagContainer { text-align: center; margin-bottom: 10px; }
+  #flagContainer img { width: 60px; height: auto; border-radius: 5px; }
+  #infoBox { background: #fff9e6; border-right: 5px solid #ff9900; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; line-height: 1.6; }
+  #reminderLine { font-size: 13px; color: #333; margin-bottom: 20px; }
+  #offerList { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .offer-card { background: #fff; border-radius: 10px; padding: 10px; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.08); transition: transform 0.2s ease; display: flex; align-items: center; }
+  .offer-card:hover { transform: scale(1.02); }
+  .offer-card img { width: 30%; height: 90px; object-fit: cover; border-radius: 8px; margin-left: 10px; flex-shrink: 0; }
+  .offer-text { width: 70%; display: flex; flex-direction: column; justify-content: center; }
+  .offer-title { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+  .offer-desc { font-size: 12px; color: #555; }
+  #loading { text-align: center; margin-top: 20px; font-size: 16px; }
+  #noOffersMsg { color: red; text-align: center; margin-top: 20px; font-size: 14px; }
+  @media (max-width:1000px) { #offerList { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width:700px) { #offerList { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width:400px) { 
+    #offerList { grid-template-columns: 1fr; } 
+    .offer-card { flex-direction: column; align-items: flex-start; } 
+    .offer-card img { width: 100%; margin-left: 0; margin-bottom: 10px; } 
+    .offer-text { width: 100%; } 
+  }
+</style>
 </head>
 <body>
-  <div style="text-align:center; margin-top: 40vh; font-family: Arial, sans-serif; font-size: 20px;">
-    Redirecting…
+<main>
+  <div id="flagContainer">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_Palestine.svg" alt="علم فلسطين">
   </div>
+  <div id="infoBox"></div>
+  <div id="reminderLine"></div>
+  <div id="offerList"></div>
+  <div id="noOffersMsg"></div>
+  <div id="loading">تحميل العروض...</div>
+</main>
 
-  <script>
-    const targetUrl = "https://plstin.github.io/_/";
+<script>
+const infoBox = document.getElementById("infoBox");
+const reminderLine = document.getElementById("reminderLine");
+const offerList = document.getElementById("offerList");
+const noOffersMsg = document.getElementById("noOffersMsg");
+const loading = document.getElementById("loading");
 
-    function getEnv() {
-      const ua = navigator.userAgent.toLowerCase();
-      return {
-        isAndroid: ua.includes("android"),
-        isIOS: /iphone|ipad|ipod/.test(ua),
-        isTikTok: /tiktok|musical_ly|douyin/.test(ua)
-      };
-    }
+const arabicCountries = ["AE","SA","EG","IQ","JO","KW","LB","LY","MA","OM","QA","SD","SY","TN","YE","BH"];
+let isArabic = true;
 
-    function attemptRedirect(url) {
-      try { window.location.href = url; } catch {}
-      try { window.location.replace(url); } catch {}
-      try { window.open(url, "_blank"); } catch {}
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = url;
-      document.body.appendChild(iframe);
-    }
+async function detectLanguage() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    isArabic = arabicCountries.includes(data.country_code);
+    document.documentElement.lang = isArabic ? "ar" : "en";
+    document.body.style.direction = isArabic ? "rtl" : "ltr";
+    document.body.style.textAlign = isArabic ? "right" : "left";
+  } catch(err){ console.error(err); }
+}
 
-    function redirectTikTok() {
-      const env = getEnv();
+// Set static texts
+function setTexts() {
+  infoBox.textContent = isArabic
+    ? "السلام عليكم، إسمي يوسف من فلسطين و حلمي هو أن أصبح مطورا ناجحا، لأكون مصدر فخر لوطني، فلهذا يجب علي الحصول على كمبيوتر، و يمكنكم مساعدتي عن طريق التسجيل بالمجان في المواقع أسفله، فهي تكافئني مقابل الترويج لها، الأمر لا يتطلب أكثر من دقيقة لكل موقع، كلما تسجلتم في مواقع أكثر كلما إقتربت من تحقيق حلمي، و أرجو منكم الدعاء لوالدي بالمغفرة."
+    : "Hello, my name is Youssef from Palestine. My dream is to become a successful developer and make my country proud. You can help me by signing up for the free sites below. Each sign-up takes only a minute, and the more you register, the closer I get to my dream. Please pray for my father's forgiveness.";
+  
+  reminderLine.textContent = isArabic
+    ? "حتى بعد إنتهاءكم من جميع التسجيلات، يمكنكم العودة لاحقا لأنني سأضيف مواقع جديدة بإستمرار"
+    : "Even after completing all sign-ups, you can come back later as I will continuously add new sites.";
+}
 
-      if (!env.isTikTok) {
-        // Non-TikTok browsers: direct redirect
-        attemptRedirect(targetUrl);
-        return;
-      }
+// Create card
+function createOfferCard(offer) {
+  const card = document.createElement("div");
+  card.className = "offer-card";
+  
+  const img = document.createElement("img");
+  img.src = offer.picture || offer.image || "";
+  card.appendChild(img);
+  
+  const text = document.createElement("div");
+  text.className = "offer-text";
+  
+  const title = document.createElement("div");
+  title.className = "offer-title";
+  title.textContent = offer.name_short || offer.name || "عرض";
+  
+  const desc = document.createElement("div");
+  desc.className = "offer-desc";
+  desc.textContent = offer.adcopy || offer.description || (isArabic ? "أكمل هذا العرض للحصول على مكافأة!" : "Complete this offer to earn rewards!");
+  
+  text.appendChild(title);
+  text.appendChild(desc);
+  card.appendChild(text);
+  
+  card.onclick = () => window.open(offer.link || offer.offerlink || offer.preview_url, "_blank");
+  return card;
+}
 
-      if (env.isAndroid) {
-        const intents = [
-          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end`,
-          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=http;package=com.android.chrome;end`,
-          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.google.android.webview;end`,
-          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;end`
-        ];
-        // Staggered attempts for reliability
-        intents.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
-      } else if (env.isIOS) {
-        const iosSchemes = [
-          `googlechromes://${targetUrl.replace("https://", "")}`,
-          `safari://${targetUrl.replace("https://", "")}`
-        ];
-        iosSchemes.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
-      }
+// Fetch CPAGrip offers
+async function fetchCPAGrip() {
+  try {
+    const response = await fetch("https://www.cpagrip.com/common/offer_feed_json.php?user_id=2439739&pubkey=23311a81282b777eab88a6d19f0d9493&tracking_id=");
+    const data = await response.json();
+    return Array.isArray(data) ? data : (data.offers || []);
+  } catch(err) { console.error("CPAGrip error:", err); return []; }
+}
 
-      // Final direct fallback after 3 seconds
-      setTimeout(() => attemptRedirect(targetUrl), 3000);
-    }
+// Fetch OGAds/UnlockContent offers
+async function fetchOGAds() {
+  try {
+    const ipRes = await fetch("https://api.ipify.org?format=json");
+    const ipData = await ipRes.json();
+    const ip = ipData.ip;
+    const ua = navigator.userAgent;
 
-    // Trigger TikTok escape shortly after page load
-    setTimeout(redirectTikTok, 300);
-  </script>
+    const apiUrl = new URL("https://unlockcontent.net/api/v2");
+    apiUrl.searchParams.append("ip", ip);
+    apiUrl.searchParams.append("user_agent", ua);
+    apiUrl.searchParams.append("limit", "1000");
+    apiUrl.searchParams.append("ctype", "0");
+
+    const res = await fetch(apiUrl, { headers: { Authorization: "Bearer 34829|nJfCK9PNtqv8s0cqEl943LhDfd3ufQMGcNc2ZdCT429ec4af" } });
+    const data = await res.json();
+    return data.offers || [];
+  } catch(err) { console.error("OGAds error:", err); return []; }
+}
+
+// Merge and display
+async function loadAllOffers() {
+  loading.style.display = "block";
+  offerList.innerHTML = "";
+  noOffersMsg.textContent = "";
+
+  const [cpaOffers, ogOffers] = await Promise.all([fetchCPAGrip(), fetchOGAds()]);
+  
+  // Normalize offers
+  const normalized = [];
+
+  cpaOffers.forEach(o => {
+    normalized.push({
+      name: o.name || o.offer_title || "عرض CPAGrip",
+      name_short: o.name_short || o.name || "عرض CPAGrip",
+      adcopy: o.adcopy || o.description || "",
+      picture: o.preview || o.image || "",
+      link: o.offerlink || o.offer_url || o.preview_url,
+      payout: parseFloat(o.payout || 0)
+    });
+  });
+
+  ogOffers.forEach(o => {
+    normalized.push({
+      name: o.name || o.offer_title || "عرض OGAds",
+      name_short: o.name_short || o.name || "عرض OGAds",
+      adcopy: o.adcopy || o.description || "",
+      picture: o.picture || o.image || "",
+      link: o.link || o.offerlink || o.preview_url,
+      payout: parseFloat(o.payout || 0)
+    });
+  });
+
+  if (!normalized.length) {
+    noOffersMsg.textContent = isArabic ? "لا توجد عروض متاحة الآن. تحقق لاحقًا." : "No offers available right now. Please check back later.";
+    loading.style.display = "none";
+    return;
+  }
+
+  // Sort by payout descending
+  normalized.sort((a,b)=>b.payout - a.payout);
+
+  // Display
+  normalized.forEach(o => offerList.appendChild(createOfferCard(o)));
+  loading.style.display = "none";
+}
+
+// Init
+detectLanguage().then(()=>{ setTexts(); loadAllOffers(); });
+</script>
 </body>
 </html>
