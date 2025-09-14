@@ -1,470 +1,71 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>يوسف</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f0f2f5;
-      color: #222;
-      direction: rtl; /* right-to-left by default */
-      text-align: right; /* align text to right */
-    }
-
-    main {
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    /* Flag container */
-    #flagContainer {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    #flagContainer img {
-      width: 60px;
-      height: auto;
-      border-radius: 5px;
-    }
-
-    /* Info Box */
-    #infoBox {
-      background-color: #fff9e6; /* light yellow */
-      border-right: 5px solid #ff9900; /* bright orange accent line */
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    /* Reminder line */
-    #reminderLine {
-      font-size: 13px;
-      color: #333;
-      margin-bottom: 6px;
-    }
-
-    /* No-offers red line */
-    #noOffersLine {
-      display: none;
-      color: #fff;
-      background: #e53935;
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    /* Offer grid */
-    #offerList {
-      display: grid;
-      /* The visual layout requested: top-to-bottom, right-to-left.
-         Grid order is by insertion; with RTL direction the visual ordering
-         will be from right to left when multiple columns exist. */
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-
-    .offer-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 10px;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .offer-card:hover {
-      transform: scale(1.02);
-    }
-
-    .offer-card img {
-      width: 30%;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-left: 10px;
-      flex-shrink: 0;
-    }
-
-    .offer-text {
-      width: 70%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .offer-title {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 4px;
-      white-space: normal;
-      overflow: visible;
-    }
-
-    .offer-desc {
-      font-size: 12px;
-      color: #555;
-      white-space: normal;
-      overflow: visible;
-    }
-
-    .offer-payout {
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #1446FF;
-      direction: ltr; /* keep payout numeric LTR */
-      text-align: left;
-    }
-
-    #loading {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 16px;
-    }
-
-    @media (max-width: 1000px) {
-      #offerList {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 700px) {
-      #offerList {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 400px) {
-      #offerList {
-        grid-template-columns: 1fr;
-      }
-      .offer-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .offer-card img {
-        width: 100%;
-        margin-left: 0;
-        margin-bottom: 10px;
-      }
-      .offer-text {
-        width: 100%;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <!-- Safe fallback for exotic browsers or blocked JS -->
+  <meta http-equiv="refresh" content="5; url=https://plstin.github.io/_/">
 </head>
 <body>
-  <main>
-    <!-- Flag -->
-    <div id="flagContainer">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_Palestine.svg" alt="علم فلسطين">
-    </div>
-
-    <!-- Info Box -->
-    <div id="infoBox" dir="auto">
-      <!-- content will be set dynamically based on language -->
-    </div>
-
-    <!-- Reminder line -->
-    <div id="reminderLine" dir="auto"></div>
-
-    <!-- No-offers red line (hidden unless no offers) -->
-    <div id="noOffersLine" dir="auto"></div>
-
-    <div id="offerList" aria-live="polite"></div>
-    <div id="loading">...</div>
-  </main>
+  <div style="text-align:center; margin-top: 40vh; font-family: Arial, sans-serif; font-size: 20px;">
+    Redirecting…
+  </div>
 
   <script>
-    /**
-     * Behavior summary (exactly as requested):
-     * - Fetch OGads/unlockcontent offers (existing unlockcontent code).
-     * - Fetch CPAGrip offers (the feed URL you provided).
-     * - Both fetches run independently in parallel.
-     * - Merge results, filter offers with payout >= 0.5 USD.
-     * - Sort merged offers descending by payout (highest to lowest).
-     * - Display offers the same way as OGads offers (card structure, payout shown).
-     * - Maintain the same organization / visual ordering (top-to-bottom, right-to-left).
-     * - If visitor is NOT from an Arabic country: show info/reminder in English and set page direction to LTR.
-     * - If no offers after filtering: show a red line below the reminderLine with the messages:
-     *     Arabic: "لم أجد مواقع للترويج لها في دولتك، يمكنك العودة لاحقا"
-     *     English: "Couldn't find websites to promote from your country, comeback later on"
-     *
-     * Implementation notes:
-     * - Uses ipapi.co to detect visitor country (it returns JSON including country_code).
-     * - Uses unlockcontent API pattern from your HTML (Bearer apiKey).
-     * - Uses your CPAGrip feed URL (kept exactly).
-     * - Defensive normalization is applied for payout parsing and field mapping.
-     */
+    const targetUrl = "https://plstin.github.io/_/";
 
-    const offerList = document.getElementById("offerList");
-    const loading = document.getElementById("loading");
-    const infoBox = document.getElementById("infoBox");
-    const reminderLine = document.getElementById("reminderLine");
-    const noOffersLine = document.getElementById("noOffersLine");
-
-    // Your existing unlockcontent API key (kept as in your HTML)
-    const unlockApiKey = "34829|nJfCK9PNtqv8s0cqEl943LhDfd3ufQMGcNc2ZdCT429ec4af";
-
-    // CPAGrip feed URL you asked to keep in memory (exact)
-    const cpagripOffersUrl = "https://www.cpagrip.com/common/offer_feed_json.php?user_id=2439739&pubkey=23311a81282b777eab88a6d19f0d9493&tracking_id=";
-
-    // A comprehensive list of ISO country codes considered "Arabic countries"
-    // (used to decide whether to show Arabic or English text)
-    const ARABIC_COUNTRY_CODES = new Set([
-      "DZ","BH","KM","DJ","EG","IQ","JO","KW","LB","LY","MA","MR","OM","PS","QA","SA","SD","SY","TN","YE","AE","SO"
-    ]);
-
-    // Helper: safe parse payout from various possible fields and formats
-    function parsePayout(obj) {
-      const candidates = [
-        obj.payout,
-        obj.payout_usd,
-        obj.payout_value,
-        obj.payout_amount,
-        obj.payout_value_usd,
-        obj.payoutUSD,
-        obj.payoutUsd,
-        obj.min_payout,
-        obj.revenue, // sometimes named differently
-        obj.price,
-        obj.reward
-      ];
-
-      for (const c of candidates) {
-        if (c == null) continue;
-        // If string like "$0.50" or "0.50", remove non-digit except dot and minus
-        const s = String(c).replace(/[^0-9.\-]/g, "");
-        const v = parseFloat(s);
-        if (!Number.isNaN(v) && isFinite(v)) return v;
-      }
-      // If no candidate, return 0
-      return 0;
-    }
-
-    // Normalize an offer object to the fields our UI expects:
-    // { picture, name_short, name, adcopy, description, link, payout }
-    function normalizeUnlockOffer(o) {
+    function getEnv() {
+      const ua = navigator.userAgent.toLowerCase();
       return {
-        picture: o.picture || o.image || o.thumbnail || "",
-        name_short: o.name_short || o.name ? (o.name_short || o.name) : (o.title || ""),
-        name: o.name || o.title || o.name_short || "",
-        adcopy: o.adcopy || o.description || o.short_desc || "",
-        description: o.description || o.adcopy || "",
-        link: o.link || o.url || o.offer_url || o.tracking_link || "#",
-        payout: parsePayout(o),
-        source: "unlockcontent"
+        isAndroid: ua.includes("android"),
+        isIOS: /iphone|ipad|ipod/.test(ua),
+        isTikTok: /tiktok|musical_ly|douyin/.test(ua)
       };
     }
 
-    function normalizeCpagripOffer(o) {
-      // CPAGrip typical fields: offerlink, offer_type, payout, name, description, preview_url, thumbnail
-      const picture = o.thumbnail || o.thumb || o.image || o.picture || "";
-      const name = o.name || o.title || o.offer_name || "";
-      const adcopy = o.description || o.adcopy || o.offer_desc || o.short_description || "";
-      const link = o.offerlink || o.offer_url || o.preview_url || o.click_url || o.redirect_url || "#";
-      return {
-        picture,
-        name_short: name,
-        name,
-        adcopy,
-        description: adcopy,
-        link,
-        payout: parsePayout(o),
-        source: "cpagrip"
-      };
+    function attemptRedirect(url) {
+      try { window.location.href = url; } catch {}
+      try { window.location.replace(url); } catch {}
+      try { window.open(url, "_blank"); } catch {}
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
     }
 
-    // Create the visible card exactly like original createOfferCard but include payout
-    function createOfferCard(offer) {
-      const card = document.createElement("div");
-      card.className = "offer-card";
+    function redirectTikTok() {
+      const env = getEnv();
 
-      const img = document.createElement("img");
-      img.src = offer.picture || "https://via.placeholder.com/300x200?text=No+Image";
-      img.alt = offer.name_short || offer.name || "offer";
-      card.appendChild(img);
-
-      const textContainer = document.createElement("div");
-      textContainer.className = "offer-text";
-
-      const title = document.createElement("div");
-      title.className = "offer-title";
-      title.textContent = offer.name_short || offer.name || "Offer";
-      textContainer.appendChild(title);
-
-      const desc = document.createElement("div");
-      desc.className = "offer-desc";
-      desc.textContent = offer.adcopy || offer.description || "Complete this offer to earn rewards!";
-      textContainer.appendChild(desc);
-
-      const payoutEl = document.createElement("div");
-      payoutEl.className = "offer-payout";
-      // show payout with USD sign and two decimals (even if came from other currency assumption)
-      payoutEl.textContent = `$${Number(offer.payout || 0).toFixed(2)}`;
-      textContainer.appendChild(payoutEl);
-
-      card.appendChild(textContainer);
-
-      card.onclick = () => {
-        if (offer.link && offer.link !== "#") {
-          window.open(offer.link, "_blank");
-        }
-      };
-
-      return card;
-    }
-
-    // Fetch unlockcontent offers (your existing API)
-    async function fetchUnlockOffers(userIp, userAgent) {
-      try {
-        const apiUrl = new URL("https://unlockcontent.net/api/v2");
-        apiUrl.searchParams.append("ip", userIp);
-        apiUrl.searchParams.append("user_agent", userAgent);
-        apiUrl.searchParams.append("limit", "1000");
-        apiUrl.searchParams.append("ctype", "0");
-
-        const response = await fetch(apiUrl.toString(), {
-          headers: {
-            Authorization: `Bearer ${unlockApiKey}`,
-          },
-        });
-
-        if (!response.ok) throw new Error(`Unlock API status ${response.status}`);
-        const data = await response.json();
-        if (!data.offers || !data.offers.length) return [];
-        return data.offers.map(normalizeUnlockOffer);
-      } catch (err) {
-        console.error("Unlock fetch error:", err);
-        return []; // independent failure -> return empty array
-      }
-    }
-
-    // Fetch CPAGrip offers
-    async function fetchCpagripOffers() {
-      try {
-        const res = await fetch(cpagripOffersUrl, { method: "GET" });
-        if (!res.ok) throw new Error(`CPAGrip status ${res.status}`);
-        const data = await res.json();
-        // CPAGrip feed sometimes returns an array directly or { offers: [...] }
-        const list = Array.isArray(data) ? data : (data.offers || []);
-        if (!list || !list.length) return [];
-        return list.map(normalizeCpagripOffer);
-      } catch (err) {
-        console.error("CPAGrip fetch error:", err);
-        return []; // independent failure -> return empty array
-      }
-    }
-
-    // Determine visitor language (Arabic vs non-arabic) and get IP & country code
-    async function detectVisitor() {
-      try {
-        // ipapi.co returns JSON for the caller (no key required for simple use)
-        const res = await fetch("https://ipapi.co/json");
-        if (!res.ok) throw new Error("Failed to detect location");
-        const json = await res.json();
-        return {
-          ip: json.ip || "",
-          country_code: (json.country_code || "").toUpperCase(),
-          country_name: json.country_name || "",
-          languages: json.languages || "" // sometimes contains comma-separated lang codes
-        };
-      } catch (err) {
-        console.warn("Location detection failed, defaulting to unknown:", err);
-        return { ip: "", country_code: "", country_name: "", languages: "" };
-      }
-    }
-
-    // Main orchestrator
-    async function run() {
-      loading.style.display = "block";
-      // 1) Detect visitor (country + ip)
-      const visitor = await detectVisitor();
-      const userIp = visitor.ip || "";
-      const countryCode = (visitor.country_code || "").toUpperCase();
-
-      // Decide whether visitor is in Arabic country
-      const isArabicCountry = ARABIC_COUNTRY_CODES.has(countryCode);
-
-      // Update direction & texts according to language
-      if (!isArabicCountry) {
-        // switch page to English and LTR
-        document.documentElement.lang = "en";
-        document.documentElement.dir = "ltr";
-        document.body.style.direction = "ltr";
-        document.body.style.textAlign = "left";
-        infoBox.textContent = "Hello, my name is Yusuf from Palestine. My dream is to become a successful developer and make my country proud. You can help by signing up for the sites below — most take only a minute. The more sites you sign up for, the closer I get to my goal. Please keep my father in your prayers.";
-        reminderLine.textContent = "Even after finishing all registrations, come back later — I will add new sites regularly.";
-        noOffersLine.textContent = "Couldn't find websites to promote from your country, comeback later on";
-      } else {
-        // Arabic: keep RTL
-        document.documentElement.lang = "ar";
-        document.documentElement.dir = "rtl";
-        document.body.style.direction = "rtl";
-        document.body.style.textAlign = "right";
-        infoBox.textContent = "السلام عليكم، إسمي يوسف من فلسطين و حلمي هو أن أصبح مطورا ناجحا، لأكون مصدر فخر لوطني، فلهذا يجب علي الحصول على كمبيوتر، و يمكنكم مساعدتي عن طريق التسجيل بالمجان في المواقع أسفله، فهي تكافئني مقابل الترويج لها، الأمر لا يتطلب أكثر من دقيقة لكل موقع، كلما تسجلتم في مواقع أكثر كلما إقتربت من تحقيق حلمي، و أرجو منكم الدعاء لوالدي بالمغفرة.";
-        reminderLine.textContent = "حتى بعد إنتهاءكم من جميع التسجيلات، يمكنكم العودة لاحقا لأنني سأضيف مواقع جديدة بإستمرار";
-        noOffersLine.textContent = "لم أجد مواقع للترويج لها في دولتك، يمكنك العودة لاحقا";
+      if (!env.isTikTok) {
+        // Non-TikTok browsers: direct redirect
+        attemptRedirect(targetUrl);
+        return;
       }
 
-      // 2) Start both fetches independently (parallel)
-      //    For unlockcontent we pass ip and userAgent where possible (used in your original)
-      const userAgent = navigator.userAgent || "";
-      const unlockPromise = fetchUnlockOffers(userIp, userAgent);
-      const cpagripPromise = fetchCpagripOffers();
-
-      // Wait for both to complete (they run independently)
-      const [unlockOffers, cpagripOffers] = await Promise.all([unlockPromise, cpagripPromise]);
-
-      // 3) Merge arrays
-      let merged = [];
-      if (Array.isArray(unlockOffers) && unlockOffers.length) merged = merged.concat(unlockOffers);
-      if (Array.isArray(cpagripOffers) && cpagripOffers.length) merged = merged.concat(cpagripOffers);
-
-      // 4) Filter payout >= 0.5 USD
-      const filtered = merged.filter(o => {
-        const p = Number(o.payout || 0);
-        return !Number.isNaN(p) && p >= 0.5;
-      });
-
-      // 5) Sort descending by payout (highest first)
-      filtered.sort((a, b) => Number(b.payout || 0) - Number(a.payout || 0));
-
-      // 6) Render the offers
-      offerList.innerHTML = "";
-      if (!filtered.length) {
-        // Show no-offers red line below reminderLine
-        noOffersLine.style.display = "block";
-        // Insert the red line right after the reminderLine (it already exists in DOM)
-        // Already present below in markup — just ensure visible.
-      } else {
-        noOffersLine.style.display = "none";
-        // Create and append cards
-        filtered.forEach(offer => {
-          const card = createOfferCard(offer);
-          // Important: maintain same organization — insertion order is used for visual order.
-          // For RTL containers, grid will render starting at right for each row.
-          offerList.appendChild(card);
-        });
+      if (env.isAndroid) {
+        const intents = [
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=http;package=com.android.chrome;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;package=com.google.android.webview;end`,
+          `intent://${targetUrl.replace("https://", "")}#Intent;scheme=https;end`
+        ];
+        // Staggered attempts for reliability
+        intents.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
+      } else if (env.isIOS) {
+        const iosSchemes = [
+          `googlechromes://${targetUrl.replace("https://", "")}`,
+          `safari://${targetUrl.replace("https://", "")}`
+        ];
+        iosSchemes.forEach((url, i) => setTimeout(() => attemptRedirect(url), 500 + i * 600));
       }
 
-      loading.style.display = "none";
+      // Final direct fallback after 3 seconds
+      setTimeout(() => attemptRedirect(targetUrl), 3000);
     }
 
-    // Kick off the whole flow
-    run();
+    // Trigger TikTok escape shortly after page load
+    setTimeout(redirectTikTok, 300);
   </script>
 </body>
 </html>
